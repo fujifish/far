@@ -1,0 +1,214 @@
+#!/usr/bin/env node
+const fs = require("fs");
+const path = require("path");
+const yaml = require("js-yaml");
+const chalk = require("chalk");
+const terminal = require("../lib/terminal");
+const Far = require("../index");
+
+(async () => {
+  const defaults = {
+    name: path.basename(process.cwd()),
+    cluster: path.basename(process.cwd()),
+    region: "eu-west-1",
+    profile: "default",
+    type: "fargate",
+    count: 1,
+    dockerfile: "Dockerfile",
+    draft: false,
+    secrets: [
+      "resources/caprizaConfig.json",
+      "resources/systemConfig.json"
+    ],
+    cpu: 256,
+    memory: 512,
+    subnets: [],
+    securityGroups: [],
+    variables: [],
+    events: 10
+  };
+  
+  const applyConfig = argv => {
+    let env = argv.env || "test";
+    let config = {
+      env: env
+    }
+    let configFile = path.resolve(process.cwd(), `farconfig.${env}`);
+    try {
+      config = yaml.safeLoad(fs.readFileSync(configFile, "utf8"));
+      config = Object.assign(defaults, config, argv);
+    } catch(e) {
+      if (argv._[0] !== "init") {
+        terminal.exit(`error reading config file: ${e.message}`);
+      }
+      config = Object.assign(defaults, argv);;
+    }
+    config.env = env;
+    return config;
+  }
+
+  function commonServiceOptions(yargs) {
+    return yargs
+      .option("tag", {
+        describe: "image tag. default tage name is the version in the package.json file"
+      })
+      .option("draft", {
+        type: "boolean",
+        describe: "draft mode. in this mode every image tag is suffixed with the current timestamp"
+      })
+      .option("subnets", {
+        describe: "the subnets to associate with the deployment",
+        type: "array"
+      })
+      .option("securityGroups", {
+        describe: "the security groups to associate with the deployment",
+        type: "array"
+      })
+      .option("cpu", {
+        type: "number",
+        describe: "vCPU reservation (256|512|1024|2048|4096)"
+      })
+      .option("memory", {
+        type: "number",
+        describe: "memory reservation (aligned to vCPU)"
+      })
+      .options("secrets", {
+        type: "array",
+        describe: "list of files with secrets to make available to the service container instances"
+      })
+      .option("variables", {
+        type: "array",
+        describe: "environment variables to provide to the service (in the form of name=value)"
+      })
+      .option("type", {
+        describe: "deployment type (fargate|ec2)",
+        coerce: function(type) {
+          if (type !== "fargate" && type !== "ec2") {
+            throw new Error(`type must be one of "fargate" or "ec2"`);
+          }
+          return type;
+        }
+      })
+      .option("role", {
+        describe: "IAM role that containers in this task assume"
+      });
+  }
+
+  const options = require("yargs")
+    .option("env", {
+      describe: `configuration file environment (e.g. specifying "prod" will load "farconfig.prod")`
+    })
+    .option("name", {
+      describe: "service name"
+    })
+    .option("region", {
+      describe: "aws region"
+    })
+    .option("cluster", {
+      describe: "aws cluster name"
+    })
+    .option("profile", {
+      describe: "aws credentials profile name from default AWS credentials file"
+    })
+    .middleware([applyConfig])
+    .command("init", "initialize a new far configuration file in the current directory")
+    .command("deploy", "deploy the local docker image and run it as a service", yargs => {
+      return commonServiceOptions(yargs)
+        .option("dockerfile", {
+          describe: "docker file to use for building the image"
+        })
+        .option("count", {
+          describe: "number of container instances to run in the service",
+          coerce: function(count) {
+            if (count === undefined) {
+              return count;
+            }
+            count = Number.parseInt(count);
+            if (Number.isNaN(count) || count < 0 || count > 10) {
+              throw new Error(`count must be a number between 0 and 10`);
+            }
+            return count;
+          }
+        })
+    })
+    .command(
+      "update",
+      "update an existing service (cpu, memory, secrets, etc.) without deploying a new docker image",
+      yargs => {
+        return commonServiceOptions(yargs);
+      }
+    )
+    .command(
+      "scale <count>",
+      "scale up or down the number of instances running in the service (0 will stop the service)",
+      yargs => {
+        return yargs.positional("count", {
+          type: "number",
+          describe: "number of container instances to run in the service",
+          coerce: function(count) {
+            count = Number.parseInt(count);
+            if (Number.isNaN(count) || count < 0 || count > 10) {
+              throw new Error(`scale count must be a number between 0 and 10`);
+            }
+            return count;
+          }
+        });
+      }
+    )
+    .command("stop", "stop all container instances running in the service (same as 'scale 0')")
+    .command("status", "view service status information", yargs => {
+      return yargs.option("events", {
+        describe: "number of events to display (0-100)",
+        type: "number",
+        coerce: function(events) {
+          events = Number.parseInt(events);
+          if (Number.isNaN(events) || events < 0 || events > 100) {
+            throw new Error(`events must be a numner between 0 and 100`);
+          }
+          return events;
+        }
+      });
+    })
+    .command("logs", "view all container instances logs in the service", yargs => {
+      return yargs
+        .option("start", {
+          describe: "start time of logs to view. default is current time",
+          coerce: function(time) {
+            let date = new Date(time);
+            if (date.toString() === "Invalid Date") {
+              throw new Error(`start time is not a valid time`);
+            }
+            return time;
+          }
+        })
+        .option("end", {
+          describe: "end time of logs to view. if not provided, logs will stream continuously",
+          coerce: function(time) {
+            let date = new Date(time);
+            if (date.toString() === "Invalid Date") {
+              throw new Error(`end time is not a valid time`);
+            }
+            return time;
+          }
+        });
+    })
+    .command("terminate", "terminate the environment and all its resources")
+    .demandCommand(1, "Please specify a command")
+    .epilog(
+`A configuration file named "fargate.<env>" must exist in the current working directory for all commands (except init).
+Use "far init" to initialize a configuration file for the "test" environment.
+Use "far init --env prod" to initialize a configuration file for the "prod" environment.
+Use "far <command>" to run with the "farconfig.test" configuration.
+Use "far <command> --env prod" to run with the "farconfig.prod" configuration.`)
+    .strict()
+    .wrap(120).argv;
+
+  try {
+    terminal.log(`Environment: ${chalk.green(chalk.bold(options.env))} ${options.draft ? chalk.cyan("(draft)") : ""}`);
+    let far = new Far(options);
+    let command = options._[0];
+    await far.execute(command);
+  } catch (e) {
+    terminal.exit(e.message);
+  }
+})();
