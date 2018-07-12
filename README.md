@@ -10,7 +10,12 @@ npm install -g @capriza/far
 
 ## Getting Started
 
-For the context of "Getting Started", we assume a project directory named `my-project` with a Dockerfile you want to deploy to region `eu-west-1` of AWS.
+We assume a project directory named `my-project` with a Dockerfile you want to deploy to region `eu-west-1` of AWS.
+
+#### Prerequesits:
+
+* AWS account
+* Docker installed and running. Get Docker from [this location](https://docs.docker.com/install/)
 
 ### AWS Credentials
 
