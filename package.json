@@ -1,6 +1,6 @@
 {
-  "name": "far",
-  "version": "0.1.2",
+  "name": "@capriza/far",
+  "version": "0.1.3",
   "description": "AWS ECS/Fargate as-a-service CLI",
   "main": "index.js",
   "bin": {
