@@ -67,7 +67,7 @@ log line 3...
 far <command> [options]
 ```
 
-far requires that a `farconfig.<env>` file exists in the working directory where far is executed (except for `far init`). `env` denotes the environment of the deployment, examples of which include "dev" and "prod". If not specified, `env` defaults to `dev`.
+far requires that a `farconfig.<env>` file exists in the working directory where far is executed (except for `far init`). `env` denotes the environment of the deployment, examples of which include "test" and "prod". If not specified, `env` defaults to `test`.
 
 far operates in the cotext of the current working directory, so it's necessary to cd into the directory containing the farconfig file and to execute the `far` command from within the directory.
 
@@ -101,7 +101,7 @@ Options:
 
 #### Common Options
 
-* `env` - the environment of deployment. defaults to `dev`.
+* `env` - the environment of deployment. defaults to `test`.
 * `name` - the name of the service. default is the current working directory name.
 * `region` - the AWS region where the service is deployed.
 * `cluster` - the name if the AWS cluster where the service is deployed.
