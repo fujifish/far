@@ -5,7 +5,7 @@ CLI for deploying a docker container to AWS Fargate/ECS and run it as a service.
 ## Installation
 
 ```bash
-npm install -g far
+npm install -g @capriza/far
 ```
 
 ## Getting Started
