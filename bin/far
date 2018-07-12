@@ -16,10 +16,7 @@ const Far = require("../index");
     count: 1,
     dockerfile: "Dockerfile",
     draft: false,
-    secrets: [
-      "resources/caprizaConfig.json",
-      "resources/systemConfig.json"
-    ],
+    secrets: [],
     cpu: 256,
     memory: 512,
     subnets: [],
