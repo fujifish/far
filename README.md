@@ -10,7 +10,7 @@ npm install -g @capriza/far
 
 ## Getting Started
 
-We assume a project directory named `my-project` with a Dockerfile you want to deploy to region `eu-west-1` of AWS.
+Assume a project directory named `my-project` with a Dockerfile you want to deploy to region `eu-west-1` of AWS.
 
 #### Prerequesits:
 
@@ -19,8 +19,9 @@ We assume a project directory named `my-project` with a Dockerfile you want to d
 
 ### AWS Credentials
 
-far operates against an AWS account, and it is expected that the access credentials exist in the 
-~/.aws/credentials file. See [Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html) for more information on the AWS credentials. 
+`far` operates against an AWS account, and it is expected that the access credentials exist in the 
+<HOME>/.aws/credentials file. If the profile does not exist, you will be asked to add it when running `far init`.
+See [Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html) for more information on the AWS credentials. 
 
 ### Initialize
 
