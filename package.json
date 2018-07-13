@@ -1,12 +1,20 @@
 {
   "name": "@capriza/far",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "CLI for AWS Fargate as-a-service",
   "main": "index.js",
   "bin": {
     "far": "./bin/far"
   },
   "author": "fujifischer@gmail.com",
+  "homepage": "http://github.com/capriza/far",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/capriza/far.git"
+  },
+  "bugs": {
+    "url": "https://github.com/capriza/far/issues"
+  },
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "2.268.1",
