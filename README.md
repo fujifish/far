@@ -1,6 +1,6 @@
 # far
 
-CLI for deploying a docker container to AWS Fargate/ECS and run it as a service. `far` automates the process of building the docker image, setting up the AWS cluster, defining the service and creating task definitions. All that's required are AWS account credentials.
+CLI for deploying a docker container to AWS Fargate/ECS and running it as a service. `far` automates the process of building the docker image, setting up the AWS cluster, defining the service and creating task definitions. All that's required are AWS account credentials.
 
 ## Installation
 
@@ -20,7 +20,7 @@ Assume a project directory named `my-project` with a Dockerfile you want to depl
 ### AWS Credentials
 
 `far` operates against an AWS account, and it is expected that the access credentials exist in the 
-<HOME>/.aws/credentials file. If the profile does not exist, you will be asked to add it when running `far init`.
+`$HOME/.aws/credentials` file. If the profile does not exist, you will be asked to add it when running `far init`.
 See [Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html) for more information on the AWS credentials. 
 
 ### Initialize
