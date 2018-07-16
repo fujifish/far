@@ -1,6 +1,6 @@
 {
   "name": "@capriza/far",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "CLI for AWS Fargate as-a-service",
   "main": "index.js",
   "bin": {
