@@ -21,8 +21,8 @@ Assume a project directory named `my-project` with a Dockerfile you want to depl
 
 ### AWS Credentials
 
-`far` operates on AWS so you must have an AWS account, so you should have a profile setup with the access credentials in the 
-`$HOME/.aws/credentials` file. If the profile does not yet exist, you will be asked to add it when running `far init`.
+`far` works with AWS so you must have an AWS account setup and a locally configured named profile with the access credentials defined in the 
+`$HOME/.aws/credentials` file. If the named profile does not yet exist, you will be asked to add it when running `far init`.
 See [Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html) for more information on the AWS credentials and profiles. 
 
 ### Initialize
