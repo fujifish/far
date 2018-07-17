@@ -71,7 +71,7 @@ const Far = require("../index");
       })
       .options("secrets", {
         type: "array",
-        describe: "list of files with secrets to make available to the service container instances"
+        describe: "list of files to upload to AWS Secrets Manager"
       })
       .option("variables", {
         type: "array",
