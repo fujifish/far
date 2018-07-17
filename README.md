@@ -1,6 +1,8 @@
 # far
 
-CLI for deploying a docker container to AWS Fargate/ECS and running it as a service. `far` automates the process of building the docker image, setting up the AWS cluster, defining the service and creating task definitions. All that's required are AWS account credentials.
+`far` is a CLI for deploying a docker container to AWS Fargate/ECS and running it as a service. 
+`far` automates the process of building the docker image, setting up the AWS cluster, defining the service and creating task definitions. 
+All that is required are AWS account credentials with sufficient privileges.
 
 ## Installation
 
@@ -15,13 +17,13 @@ Assume a project directory named `my-project` with a Dockerfile you want to depl
 #### Prerequesits:
 
 * AWS account
-* Docker installed and running. Get Docker from [this location](https://docs.docker.com/install/)
+* Docker installed and running. Get Docker from [here](https://docs.docker.com/install/)
 
 ### AWS Credentials
 
-`far` operates against an AWS account, and it is expected that the access credentials exist in the 
-`$HOME/.aws/credentials` file under an existing profile. If the profile does not exist, you will be asked to add it when running `far init`.
-See [Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html) for more information on the AWS credentials. 
+`far` operates on AWS so you must have an AWS account, so you should have a profile setup with the access credentials in the 
+`$HOME/.aws/credentials` file. If the profile does not yet exist, you will be asked to add it when running `far init`.
+See [Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html) for more information on the AWS credentials and profiles. 
 
 ### Initialize
 
@@ -134,10 +136,32 @@ Options:
 
 #### `deploy`
 
-When deploying the image is tagged with value of the `tag` option. If the tag option is not provided,
-an attempt is made to read the `version` file from the local package.json. If the tag already exists in the remote AWS respository then the deploy fails.
+When deploying, the image is tagged with value of the `tag` option. If the tag option is not provided,
+an attempt is made to use the `version` value from a local package.json. 
+If the tag already exists in the remote AWS respository then the deploy fails.
 
-If `draft` is set to `true` then the image tag is suffixed with the current timsestamp so that every time a deploy is executed a unqiue image tag is created for the deployment. It is recommended that for production deployments `draft` be set to `false`.
+If `draft` is set to `true` then the image tag is suffixed with the current timsestamp so that every time a deploy is executed a unqiue image tag is created for the deployment. 
+It is recommended that for production deployments `draft` be set to `false`.
+
+##### Environment Variables
+
+`far` automatically defines three environment variables that are available to the running service:
+
+* `AWS_REGION` - the AWS region that the service is deployed in
+* `AWS_CLUSTER` - the cluster name running the service
+* `MS_NAME` - the service name suffixed with the environment name, for example, if the service name is `my-project` and the env is `prod` then MS_NAME valus is `my-project-prod`
+
+You may specify additional environment variables in the configuration file under the `variables` option
+
+##### Secrets
+
+The `secrets` configuration option is a list of files to securly make available to the service via the [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
+During the `deploy` command, `far` reads the contents of a secret file and uploads it to the secrets manager in the account, 
+giving it the name `${MS_NAME}/FILE_NAME`.
+
+Files that are specified as `secrets` in the configuration file are automatically exluded from the built docker image.
+
+You can specify additional files/directories to exclude from the docker image by listing them in the `.dockerignore` file.
 
 ```bash
 $ far deploy help
@@ -159,7 +183,7 @@ Options:
   --securityGroups  the security groups to associate with the deployment                                         [array]
   --cpu             vCPU reservation (256|512|1024|2048|4096)                                                   [number]
   --memory          memory reservation (aligned to vCPU)                                                        [number]
-  --secrets         list of files with secrets to make available to the service container instances              [array]
+  --secrets         list of files to upload to AWS Secrets Manager                                               [array]
   --variables       environment variables to provide to the service (in the form of name=value)                  [array]
   --type            deployment type (fargate|ec2)
   --role            IAM role that containers in this task assume
