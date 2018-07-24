@@ -21,6 +21,7 @@ const Far = require("../index");
     memory: 512,
     subnets: [],
     securityGroups: [],
+    role: "far-tasks",
     variables: [],
     events: 10
   };
@@ -87,7 +88,7 @@ const Far = require("../index");
         }
       })
       .option("role", {
-        describe: "IAM role that containers in this task assume"
+        describe: `IAM role that containers in this task assume (default is "far-tasks", created automatically)`,
       });
   }
 

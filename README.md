@@ -186,7 +186,7 @@ Options:
   --secrets         list of files to upload to AWS Secrets Manager                                               [array]
   --variables       environment variables to provide to the service (in the form of name=value)                  [array]
   --type            deployment type (fargate|ec2)
-  --role            IAM role that containers in this task assume
+  --role            IAM role that containers in this task assume (default is "far-tasks", created automatically)
   --dockerfile      docker file to use for building the image
   --count           number of container instances to run in the service
 ```
@@ -216,7 +216,7 @@ Options:
   --secrets         list of files with secrets to make available to the service container instances              [array]
   --variables       environment variables to provide to the service (in the form of name=value)                  [array]
   --type            deployment type (fargate|ec2)
-  --role            IAM role that containers in this task assume
+  --role            IAM role that containers in this task assume (default is "far-tasks", created automatically)
 ```
 
 #### `scale`
