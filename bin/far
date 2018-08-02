@@ -20,6 +20,7 @@ const Far = require("../index");
     cpu: 256,
     memory: 512,
     subnets: [],
+    ports: [],
     securityGroups: [],
     role: "far-tasks",
     variables: [],
@@ -56,6 +57,10 @@ const Far = require("../index");
       })
       .option("subnets", {
         describe: "the subnets to associate with the deployment",
+        type: "array"
+      })
+      .option("ports", {
+        describe: "the ports to expose from the container",
         type: "array"
       })
       .option("securityGroups", {
