@@ -51,6 +51,10 @@ const Far = require("../index");
       .option("tag", {
         describe: "image tag. default tage name is the version in the package.json file"
       })
+      .option("repository", {
+        describe: "the docker repository storing the docker image",
+        type: "array"
+      })
       .option("draft", {
         type: "boolean",
         describe: "draft mode. in this mode every image tag is suffixed with the current timestamp"
