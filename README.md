@@ -178,6 +178,7 @@ Options:
   --cluster         aws cluster name
   --profile         aws credentials profile name from default AWS credentials file
   --tag             image tag. default tage name is the version in the package.json file
+  --repository      the docker repository storing the docker image
   --draft           draft mode. in this mode every image tag is suffixed with a timestamp                      [boolean]
   --subnets         the subnets to associate with the deployment                                                 [array]
   --securityGroups  the security groups to associate with the deployment                                         [array]
@@ -208,6 +209,7 @@ Options:
   --cluster         aws cluster name
   --profile         aws credentials profile name from default AWS credentials file
   --tag             image tag. default tage name is the version in the package.json file
+  --repository      the docker repository storing the docker image
   --draft           draft mode. in this mode every image tag is suffixed with a timestamp                      [boolean]
   --subnets         the subnets to associate with the deployment                                                 [array]
   --securityGroups  the security groups to associate with the deployment                                         [array]
