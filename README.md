@@ -155,13 +155,22 @@ You may specify additional environment variables in the configuration file under
 
 ##### Secrets
 
-The `secrets` configuration option is a list of files to securly make available to the service via the [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
-During the `deploy` command, `far` reads the contents of a secret file and uploads it to the secrets manager in the account, 
-giving it the name `${MS_NAME}/FILE_NAME`.
+The `secrets` configuration option is an array list of files to securly make available to the service via the [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
+During the `deploy` command, `far` reads the contents of the secret file and uploads it to the secrets manager in the account, 
+giving it the name `${MS_NAME}/<SECRET_ID>`. You may specify just the file name and the secret id will be the same as the file name, or specify the secret id and the path to the file containig the secret.
 
-Files that are specified as `secrets` in the configuration file are automatically exluded from the built docker image.
+```yaml
+secrets:
+  # this creates a secret with the name "secrets/mySecretFile.json" and content from that file  
+  - secrets/mySecretFile.json
 
-You can specify additional files/directories to exclude from the docker image by listing them in the `.dockerignore` file.
+  # this creates a secret with the name "secrets/myOtherFile.json" and content from file "../path/to/other/file.json"
+  - secrets/myOtherFile.json: ../path/to/other/file.json
+```
+
+Files that are specified as `secrets` in the configuration file are automatically excluded from the built docker image.
+
+You can specify additional files/directories to exclude from the docker image by listing them in your local `.dockerignore` file.
 
 ```bash
 $ far deploy help
