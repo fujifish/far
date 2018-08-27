@@ -1,3 +1,4 @@
+process.env.AWS_SDK_LOAD_CONFIG = true;
 const AWS = require("aws-sdk");
 
 class Far {
