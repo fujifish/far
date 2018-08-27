@@ -22,6 +22,7 @@ const Far = require("../index");
     subnets: [],
     ports: [],
     securityGroups: [],
+    assignPublicIp: false,
     role: "far-tasks",
     variables: [],
     events: 10
@@ -70,6 +71,10 @@ const Far = require("../index");
       .option("securityGroups", {
         describe: "the security groups to associate with the deployment",
         type: "array"
+      })
+      .option("assignPublicIp", {
+        describe: "whether to assign a public IP to the running instance (false by default)",
+        type: "boolean"
       })
       .option("cpu", {
         type: "number",
