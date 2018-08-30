@@ -27,25 +27,25 @@ const Far = require("../index");
     variables: [],
     events: 10
   };
-  
+
   const applyConfig = argv => {
     let env = argv.env || "test";
     let config = {
       env: env
-    }
+    };
     let configFile = path.resolve(process.cwd(), `farconfig.${env}`);
     try {
       config = yaml.safeLoad(fs.readFileSync(configFile, "utf8"));
       config = Object.assign(defaults, config, argv);
-    } catch(e) {
+    } catch (e) {
       if (argv._[0] !== "init") {
         terminal.exit(`error reading config file: ${e.message}`);
       }
-      config = Object.assign(defaults, argv);;
+      config = Object.assign(defaults, argv);
     }
     config.env = env;
     return config;
-  }
+  };
 
   function commonServiceOptions(yargs) {
     return yargs
@@ -73,7 +73,7 @@ const Far = require("../index");
         type: "array"
       })
       .option("assignPublicIp", {
-        describe: "whether to assign a public IP to the running instance (false by default)",
+        describe: "assign a public IP to the running instance (false by default)",
         type: "boolean"
       })
       .option("cpu", {
@@ -102,7 +102,7 @@ const Far = require("../index");
         }
       })
       .option("role", {
-        describe: `IAM role that containers in this task assume (default is "far-tasks", created automatically)`,
+        describe: `IAM role that containers in this task assume (default is "far-tasks", created automatically)`
       });
   }
 
@@ -141,7 +141,7 @@ const Far = require("../index");
             }
             return count;
           }
-        })
+        });
     })
     .command(
       "update",
@@ -207,16 +207,21 @@ const Far = require("../index");
     .command("terminate", "terminate the environment and all its resources")
     .demandCommand(1, "Please specify a command")
     .epilog(
-`A configuration file named "fargate.<env>" must exist in the current working directory for all commands (except init).
+      `A configuration file named "fargate.<env>" must exist in the current working directory for all commands (except init).
 Use "far init" to initialize a configuration file for the "test" environment.
 Use "far init --env prod" to initialize a configuration file for the "prod" environment.
 Use "far <command>" to run with the "farconfig.test" configuration.
-Use "far <command> --env prod" to run with the "farconfig.prod" configuration.`)
+Use "far <command> --env prod" to run with the "farconfig.prod" configuration.`
+    )
     .strict()
     .wrap(120).argv;
 
   try {
-    terminal.log(`Environment: ${chalk.green(chalk.bold(options.env))} ${options.draft ? chalk.cyan("(draft)") : ""}`);
+    terminal.log(
+      `${chalk.blueBright(chalk.bold(options.name))} | env: ${chalk.bold(options.env)}${
+        options.draft ? chalk.cyan(" (draft)") : ""
+      } | profile: ${chalk.bold(options.profile)} | `
+    , false); // no newline
     let far = new Far(options);
     let command = options._[0];
     await far.execute(command);

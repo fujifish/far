@@ -35,7 +35,7 @@ class Far {
   async execute(command) {
     let Cmd = new require(`./lib/commands/${command}`);
     let cmd = new Cmd(this.config);
-    return await cmd.execute();
+    return await cmd.run();
   }
 }
 
