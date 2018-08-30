@@ -1,4 +1,11 @@
-process.env.AWS_SDK_LOAD_CONFIG = true;
+const fs = require("fs");
+try {
+  // check if the config file exists
+  fs.readFileSync(`${require("os").homedir()}/.aws/config`);
+  process.env.AWS_SDK_LOAD_CONFIG = true;
+} catch (e) {
+  // ignore
+}
 const AWS = require("aws-sdk");
 
 class Far {
