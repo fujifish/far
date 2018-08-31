@@ -5,6 +5,11 @@ const yaml = require("js-yaml");
 const terminal = require("../lib/terminal");
 const Far = require("../index");
 
+// check for updates
+const updateNotifier = require("update-notifier");
+const pkg = require(path.resolve(__dirname, "../package.json"));
+updateNotifier({ pkg, updateCheckInterval: 1000*60*60}).notify({isGlobal: true});
+
 (async () => {
   const defaults = {
     name: path.basename(process.cwd()),
