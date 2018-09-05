@@ -26,7 +26,6 @@ updateNotifier({ pkg, updateCheckInterval: 1000*60*60}).notify({isGlobal: true})
     subnets: [],
     ports: [],
     securityGroups: [],
-    assignPublicIp: false,
     role: "far-tasks",
     variables: [],
     events: 10
@@ -75,10 +74,6 @@ updateNotifier({ pkg, updateCheckInterval: 1000*60*60}).notify({isGlobal: true})
       .option("securityGroups", {
         describe: "the security groups to associate with the deployment",
         type: "array"
-      })
-      .option("assignPublicIp", {
-        describe: "assign a public IP to the running instance (false by default)",
-        type: "boolean"
       })
       .option("cpu", {
         type: "number",
