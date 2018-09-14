@@ -161,7 +161,7 @@ giving it the name `${MS_NAME}/<SECRET_ID>`. You may specify just the file name 
 
 ```yaml
 secrets:
-  # this creates a secret with the name "secrets/mySecretFile.json" and content from that file  
+  # this creates a secret with the name "secrets/mySecretFile.json" with content from that file  
   - secrets/mySecretFile.json
 
   # this creates a secret with the name "secrets/myOtherFile.json" and content from file "../path/to/other/file.json"
@@ -171,6 +171,16 @@ secrets:
 Files that are specified as `secrets` in the configuration file are automatically excluded from the built docker image.
 
 You can specify additional files/directories to exclude from the docker image by listing them in your local `.dockerignore` file.
+
+##### Subnets
+
+The `subnets` configuration option is an array of subnet ids to assign to the service. If no subnets are specified, far searches for 
+all the subnets that have a tag named `farSubnet` with a value of `true`. If at least one such subnet is found, all tagged subnets will be used.
+If no tagged subnet is found, far will use the default subnets of the account.
+
+##### Security Groups
+
+The `securityGroups` configuration option is an array of security group ids to assign to the service. If no security groups are specified, far searches for all the security groups that have a tag named `farSecurityGroup` with a value of `true`. If at least one such security group is found, all tagged security groups will be used. If no tagged security group is found, far will not assign any security group to the service.
 
 ```bash
 $ far deploy help
@@ -202,6 +212,9 @@ Options:
 ```
 
 #### `update`
+
+The update command updates an existing service with new settings. 
+It performs the same steps as the `deploy` command except for building and pushing a new docker image.
 
 ```bash
 $ far update help
