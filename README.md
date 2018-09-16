@@ -143,6 +143,15 @@ If the tag already exists in the remote AWS respository then the deploy fails.
 If `draft` is set to `true` then the image tag is suffixed with the current timsestamp so that every time a deploy is executed a unqiue image tag is created for the deployment. 
 It is recommended that for production deployments `draft` be set to `false`.
 
+##### Logs
+
+Logs are automatically stored in [AWS Cloud Watch Logs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html) under 
+the log group name `awslogs-far-{name}-{env}` and log stream `awslogs-{name}-{env}` in the region of the deployment.
+
+The datetime format used for distinguishing between log events is `%Y-%m-%dT%H:%M:%S.%LZ`, however you may specify a custom datetime format by setting the `logDatetimeFormat` configuration option (format option can be found [here](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AgentReference.html)).
+
+Log retention is 90 days by default, but you may specify a different retention policy through the `logRetention` configuration option. Possible values are 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653 days.
+
 ##### Environment Variables
 
 `far` automatically defines three environment variables that are available to the running service:
@@ -205,6 +214,7 @@ Options:
   --memory          memory reservation (aligned to vCPU)                                                        [number]
   --secrets         list of files to upload to AWS Secrets Manager                                               [array]
   --variables       environment variables to provide to the service (in the form of name=value)                  [array]
+  --logRetention    number of days for log retention in CloudWatchLogs (default is 90)                          [number]
   --type            deployment type (fargate|ec2)
   --role            IAM role that containers in this task assume (default is "far-tasks", created automatically)
   --dockerfile      docker file to use for building the image
@@ -239,6 +249,7 @@ Options:
   --memory          memory reservation (aligned to vCPU)                                                        [number]
   --secrets         list of files with secrets to make available to the service container instances              [array]
   --variables       environment variables to provide to the service (in the form of name=value)                  [array]
+  --logRetention    number of days for log retention in CloudWatchLogs (default is 90)                          [number]
   --type            deployment type (fargate|ec2)
   --role            IAM role that containers in this task assume (default is "far-tasks", created automatically)
 ```

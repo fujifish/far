@@ -28,7 +28,8 @@ updateNotifier({ pkg, updateCheckInterval: 1000*60*60}).notify({isGlobal: true})
     securityGroups: [],
     role: "far-tasks",
     variables: [],
-    events: 10
+    events: 10,
+    logRetention: 90
   };
 
   const applyConfig = argv => {
@@ -90,6 +91,10 @@ updateNotifier({ pkg, updateCheckInterval: 1000*60*60}).notify({isGlobal: true})
       .option("variables", {
         type: "array",
         describe: "environment variables to provide to the service (in the form of name=value)"
+      })
+      .option("logRetention", {
+        type: "number",
+        describe: "number of days for log retention in CloudWatchLogs (default is 90)"
       })
       .option("type", {
         describe: "deployment type (fargate|ec2)",
