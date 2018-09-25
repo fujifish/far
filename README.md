@@ -154,11 +154,11 @@ Log retention is 90 days by default, but you may specify a different retention p
 
 It is possible to specify a destination to send CloudWatch Logs using [CloudWtach Logs Subscription Filters](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html) by specifying the ARN of the destination:
 * Through the `logDestination` configuration option
-* Under the desired profile through the `far.log_destination` option in the AWS configuration file located at `HOME/.aws/config`
+* Under the desired profile through the `far_log_destination` option in the AWS configuration file located at `HOME/.aws/config`. You can set this option via the aws cli by running `aws configure set far_log_destination arn:aws:logs:eu-west-1:123456789:destination:LogsDestination --profile MyProfile`
 
 ```ini
 [profile MyProfile]
-far.log_destination = arn:aws:logs:eu-west-1:123456789:destination:LogsDestination
+far_log_destination = arn:aws:logs:eu-west-1:123456789:destination:LogsDestination
 ```
 
 ##### Environment Variables
