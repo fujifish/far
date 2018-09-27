@@ -148,7 +148,7 @@ It is recommended that for production deployments `draft` be set to `false`.
 Logs are automatically stored in [AWS Cloud Watch Logs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html) under 
 the log group name `awslogs-far-{name}-{env}` and log stream `awslogs-{name}-{env}` in the region of the deployment.
 
-The datetime format used for distinguishing between log events is `%Y-%m-%dT%H:%M:%S.%LZ`, however you may specify a custom datetime format by setting the `logDatetimeFormat` configuration option (format option can be found [here](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AgentReference.html)).
+You may specify a custom datetime format for distinguishing between log events by setting the `logDatetimeFormat` configuration option (format option can be found [here](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AgentReference.html)).
 
 Log retention is 90 days by default, but you may specify a different retention policy through the `logRetention` configuration option. Possible values are 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653 days.
 
@@ -192,9 +192,11 @@ You can specify additional files/directories to exclude from the docker image by
 
 ##### Subnets
 
-The `subnets` configuration option is an array of subnet ids to assign to the service. If no subnets are specified, far searches for 
-all the subnets that have a tag named `farSubnet` with a value of `true`. If at least one such subnet is found, all tagged subnets will be used.
-If no tagged subnet is found, far will use the default subnets of the account.
+The `subnets` configuration option is an array of subnet ids to assign to the service. You may also specify `awsDefaultVpc` to have far automatically use the subnets of the default VPC. If no subnets are specified, far will search amd use all the subnets that have a tag named `farSubnet` with a value of `true`. 
+
+A public IP can be assigned to the deployed container by:
+* Setting the `assignPublicIp` configuration option to `true`
+* Specifying `awsDefaultVpc` as the `subnets` configuration option
 
 ##### Security Groups
 
