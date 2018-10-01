@@ -1,4 +1,7 @@
-# far
+<div align="center"><img src="https://capriza.github.io/images/logos/logos-looking-glass.svg" height="128" /></div>
+
+far
+===
 
 `far` is a CLI for deploying a docker container to AWS Fargate/ECS and running it as a service. 
 `far` automates the process of building the docker image, setting up the AWS cluster, defining the service and creating task definitions. 
