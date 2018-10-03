@@ -159,6 +159,10 @@ It is possible to specify a destination to send CloudWatch Logs using [CloudWtac
 * Through the `logDestination` configuration option
 * Under the desired profile through the `far_log_destination` option in the AWS configuration file located at `HOME/.aws/config`. You can set this option via the aws cli by running `aws configure set far_log_destination arn:aws:logs:eu-west-1:123456789:destination:LogsDestination --profile MyProfile`
 
+Since the log destination must reside in the same region as the CloudWatch Logs, it is possible to use an `*` instead of specifying the 
+region in the destination ARN and `far` will automatically use the region as appears in the farconfig file. For example, instead of specifying `arn:aws:logs:eu-west-1:123456789:destination:LogsDestination` you can specify `arn:aws:logs:*:123456789:destination:LogsDestination`. This enables 
+the use of a single log destination configuration that works across any region (provided that the actual destination exists in the regions).
+
 ```ini
 [profile MyProfile]
 far_log_destination = arn:aws:logs:eu-west-1:123456789:destination:LogsDestination
