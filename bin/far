@@ -14,7 +14,6 @@ updateNotifier({ pkg, updateCheckInterval: 1000*60*60}).notify({isGlobal: true})
   const defaults = {
     name: path.basename(process.cwd()),
     cluster: path.basename(process.cwd()),
-    region: "eu-west-1",
     profile: "default",
     type: "fargate",
     count: 1,
