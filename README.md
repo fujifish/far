@@ -146,6 +146,14 @@ If the tag already exists in the remote AWS respository then the deploy fails.
 If `draft` is set to `true` then the image tag is suffixed with the current timsestamp so that every time a deploy is executed a unqiue image tag is created for the deployment. 
 It is recommended that for production deployments `draft` be set to `false`.
 
+It is possible to pass custom docker build options via the `dockerBuild.` options set. Available docker build options are listed
+ at https://docs.docker.com/engine/api/v1.24/#32-images, under the section "Build image from a Dockerfile".
+ 
+```
+dockerBuild.buildargs: '{ "ENV": "MY_VAR_1"}'
+dockerBuild.memory: '4m'
+```
+
 ##### Logs
 
 Logs are automatically stored in [AWS Cloud Watch Logs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html) under 
