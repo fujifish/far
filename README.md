@@ -147,11 +147,12 @@ If `draft` is set to `true` then the image tag is suffixed with the current tims
 It is recommended that for production deployments `draft` be set to `false`.
 
 It is possible to pass custom docker build options via the `dockerBuild.` options set. Available docker build options are listed
- at https://docs.docker.com/engine/api/v1.24/#32-images, under the section "Build image from a Dockerfile".
+ at [Docker Engine API Documentation](https://docs.docker.com/engine/api/v1.24/#32-images), under the section "Build image from a Dockerfile".
  
 ```
-dockerBuild.buildargs: '{ "ENV": "MY_VAR_1"}'
-dockerBuild.memory: '4m'
+dockerBuild:
+  - buildargs: '{ "ENV": "MY_VAR_1"}'
+  - memory: '4m'
 ```
 
 ##### Logs
