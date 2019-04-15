@@ -3,9 +3,8 @@
 far
 ===
 
-`far` is a CLI for deploying a docker container to AWS Fargate/ECS and running it as a service. 
-`far` automates the process of building the docker image, setting up the AWS cluster, defining the service and creating task definitions. 
-All that is required are AWS account credentials with sufficient privileges.
+`far` is a CLI used for deploying an [ApproveSimple](https://www.approvesimple.com) connector running inside a docker container to AWS Fargate. 
+`far` automates the process of building the docker image, setting up the AWS cluster, defining the service and creating task definitions.
 
 ## Installation
 
@@ -13,60 +12,70 @@ All that is required are AWS account credentials with sufficient privileges.
 npm install -g @capriza/far
 ```
 
-## Getting Started
+### Prerequesits
 
-Assume a project directory named `my-project` with a Dockerfile you want to deploy to region `eu-west-1` of AWS.
-
-#### Prerequesits
-
-* AWS account
+* A user in [ApproveSimple Admin Console](https://admin.approvesimple.com) with deployment privileges
 * Docker installed and running. Get Docker from [here](https://docs.docker.com/install/)
 
-### AWS Credentials
+### Login
 
-`far` works with AWS so you must have an AWS account setup and a locally configured named profile with the access credentials defined in the 
-`$HOME/.aws/credentials` file. If the named profile does not yet exist, you will be asked to add it when running `far init`.
-See [Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html) for more information on the AWS credentials and profiles. 
+Running commands in `far` requires Org Admin credentials to ApproveSimple. These credentials are used to obtain and then provide `far` with temporary AWS credentials. The temporary credentials expire after 15 minutes.
+
+##### Interactive Login
+
+Every time you run a `far` command, the default browser will open and you will need to login to the Admin Console. Once logged-in, an automatic process of obtainnig AWS credentials will occur. Once obtained, the temporary credentials will be automaticalyy delivered to `far` to continue the command
+
+##### Unattended Login
+
+An ApproveSimple API Key and Secret are read from a local file, specified by the `--creds` command line option. The creds file must be a JSON with `apiKey` and `secret` keys.
+
+```javascript
+{
+  "apiKey": "YOUR USER API KEY",
+  "secret": "THE API KEY SECRET"
+}
+```
+
+## Getting Started
+
+Assume a connector named `my-connector` with a Dockerfile you want to deploy to region `eu-west-1` of AWS.
 
 ### Initialize
 
-Change into the `my-project` directory and run `far init` to create and initialize a farconfig file for the `test` environment.
+Change into the `my-connector` directory and run `far init --env test` to create and initialize a farconfig file for the `test` environment.
 
 ```bash
-$ cd my-project
-$ far init
-Environment: test
-Service name ["my-project"]:
-AWS Cluster name ["my-project"]:
+$ cd my-connector
+$ far init --env test
+Service name ["my-connector"]:
+AWS Cluster name ["my-connector"]:
 AWS region ["eu-west-1"]:
-AWS credentials profile ["default"]:
 Wrote configuration to farconfig.test
 ```
 
 ### Deploy
 
-Run the `far deploy` command to build your docker image, deploy it to AWS and run it as a service.
+Run the `far deploy --env test` command to build your docker image, deploy it to AWS and run it as a service.
 
 ```bash
-$ far deploy
-Environment: test
+$ far deploy --env test
+test • my-connector • deploy
+<... LOGIN THROUGH BROWSER ...>
+login ok
 Building docker image from Dockerfile
 <... OMITTED ...>
-Creating cluster my-project-test... Done.
-Updating service secrets.... Done.
-Environment variables for task definition: AWS_REGION,AWS_CLUSTER,MS_NAME
-Registering task definition my-project-test..... Done.
-Creating service my-project-test with subnets subnet-481a9200,subnet-4d0ef417,subnet-8af74cec.... Done.
 ```
 
-At this point your docker image is running as a service named `my-project-test` on AWS fargate.
+At this point your docker image is running as a service named `my-connector-test` on AWS fargate.
 
 ### View Logs
 
 Run the `far logs` command to view and follow the logs of our service. Logs are everything that's printed to the console by your docker image.
 
 ```bash
-$ far logs
+$ far logs --env test
+test • my-connector • logs
+login ok
 log line 1...
 log line 2...
 log line 3...
@@ -78,7 +87,7 @@ log line 3...
 far <command> [options]
 ```
 
-far requires that a `farconfig.<env>` file exists in the working directory where far is executed (except for `far init`). `env` denotes the environment of the deployment, examples of which include "test" and "prod". If not specified, `env` defaults to `test`.
+far requires that a `farconfig.<env>` file exists in the working directory where far is executed (except for `far init`), where `env` denotes the environment of the deployment, examples of which include "test" and "prod". You must specify the required environment with every far command.
 
 far operates in the cotext of the current working directory, so it's necessary to cd into the directory containing the farconfig file and to execute the `far` command from within the directory.
 
@@ -107,17 +116,17 @@ Options:
   --name     service name
   --region   aws region
   --cluster  aws cluster name
-  --profile  aws credentials profile name from default AWS credentials file
+  --creds    file containing AS api key and secret. if specified, will not open browser for interactive login
 ```
 
 #### Common Options
 
-* `env` - the environment of deployment. defaults to `test`.
+* `env` - the environment of deployment
+* `creds` - file containing ApproveSimple api key and secret. if specified, will not open the browser for interactive login
 * `name` - the name of the service. default is the current working directory name.
 * `region` - the AWS region where the service is deployed.
 * `cluster` - the name if the AWS cluster where the service is deployed.
 * `type` - the type of cluster (fargate or ec2). default is fargate.
-* `profile` - the name of the AWS credentials profile to use for authenticating with AWS. See [Named Profiles](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html) for more information.
 
 #### `init`
 
@@ -134,25 +143,53 @@ Options:
   --name     service name
   --region   aws region
   --cluster  aws cluster name
-  --profile  aws credentials profile name from default AWS credentials file
+  --creds    file containing AS api key and secret. if specified, will not open browser for interactive login
 ```
 
 #### `deploy`
 
 When deploying, the image is tagged with value of the `tag` option. If the tag option is not provided,
-an attempt is made to use the `version` value from a local package.json. 
+an attempt is made to use the `version` value from the local package.json. 
 If the tag already exists in the remote AWS respository then the deploy fails.
 
-If `draft` is set to `true` then the image tag is suffixed with the current timsestamp so that every time a deploy is executed a unqiue image tag is created for the deployment. 
-It is recommended that for production deployments `draft` be set to `false`.
+If `draft` is set to `true` then the image tag is suffixed with the current timsestamp so that every time a deploy is executed a unqiue image tag is created for the deployment. It is recommended that for production deployments `draft` be set to `false`.
 
-It is possible to pass custom docker build options via the `dockerBuild.` options set. Available docker build options are listed
+It is possible to pass custom docker build options via the `dockerBuild` options set. Available docker build options are listed
  at [Docker Engine API Documentation](https://docs.docker.com/engine/api/v1.24/#32-images), under the section "Build image from a Dockerfile".
  
 ```
 dockerBuild:
   - buildargs: '{ "ENV": "MY_VAR_1"}'
   - memory: '4m'
+```
+
+```bash
+$ far deploy help
+far deploy
+
+deploy the local docker image and run it as a service
+
+Options:
+  --help            Show help                                                                                  [boolean]
+  --version         Show version number                                                                        [boolean]
+  --env             configuration file environment (e.g. specifying "prod" will load "farconfig.prod")
+  --name            service name
+  --region          aws region
+  --cluster         aws cluster name
+  --tag             image tag. default tage name is the version in the package.json file
+  --repository      the docker repository storing the docker image
+  --draft           draft mode. in this mode every image tag is suffixed with a timestamp                      [boolean]
+  --subnets         the subnets to associate with the deployment                                                 [array]
+  --securityGroups  the security groups to associate with the deployment                                         [array]
+  --cpu             vCPU reservation (256|512|1024|2048|4096)                                                   [number]
+  --memory          memory reservation (aligned to vCPU)                                                        [number]
+  --secrets         list of files to upload to AWS Secrets Manager                                               [array]
+  --variables       environment variables to provide to the service (in the form of name=value)                  [array]
+  --logRetention    number of days for log retention in CloudWatchLogs (default is 90)                          [number]
+  --type            deployment type (fargate|ec2)
+  --role            IAM role that containers in this task assume (default is "far-tasks", created automatically)
+  --dockerfile      docker file to use for building the image
+  --count           number of container instances to run in the service
 ```
 
 ##### Logs
@@ -164,26 +201,13 @@ You may specify a custom datetime format for distinguishing between log events b
 
 Log retention is 90 days by default, but you may specify a different retention policy through the `logRetention` configuration option. Possible values are 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653 days.
 
-It is possible to specify a destination to send CloudWatch Logs using [CloudWtach Logs Subscription Filters](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/SubscriptionFilters.html) by specifying the ARN of the destination:
-* Through the `logDestination` configuration option
-* Under the desired profile through the `far_log_destination` option in the AWS configuration file located at `HOME/.aws/config`. You can set this option via the aws cli by running `aws configure set far_log_destination arn:aws:logs:eu-west-1:123456789:destination:LogsDestination --profile MyProfile`
-
-Since the log destination must reside in the same region as the CloudWatch Logs, it is possible to use an `*` instead of specifying the 
-region in the destination ARN and `far` will automatically use the region as appears in the farconfig file. For example, instead of specifying `arn:aws:logs:eu-west-1:123456789:destination:LogsDestination` you can specify `arn:aws:logs:*:123456789:destination:LogsDestination`. This enables 
-the use of a single log destination configuration that works across any region (provided that the actual destination exists in the regions).
-
-```ini
-[profile MyProfile]
-far_log_destination = arn:aws:logs:eu-west-1:123456789:destination:LogsDestination
-```
-
 ##### Environment Variables
 
 `far` automatically defines three environment variables that are available to the running service:
 
 * `AWS_REGION` - the AWS region that the service is deployed in
 * `AWS_CLUSTER` - the cluster name running the service
-* `MS_NAME` - the service name suffixed with the environment name, for example, if the service name is `my-project` and the env is `prod` then MS_NAME valus is `my-project-prod`
+* `MS_NAME` - the service name suffixed with the environment name, for example, if the service name is `my-connector` and the env is `prod` then MS_NAME valus is `my-connector-prod`
 
 You may specify additional environment variables in the configuration file under the `variables` option
 
@@ -218,36 +242,6 @@ A public IP can be assigned to the deployed container by:
 
 The `securityGroups` configuration option is an array of security group ids to assign to the service. If no security groups are specified, far searches for all the security groups that have a tag named `farSecurityGroup` with a value of `true`. If at least one such security group is found, all tagged security groups will be used. If no tagged security group is found, far will not assign any security group to the service.
 
-```bash
-$ far deploy help
-far deploy
-
-deploy the local docker image and run it as a service
-
-Options:
-  --help            Show help                                                                                  [boolean]
-  --version         Show version number                                                                        [boolean]
-  --env             configuration file environment (e.g. specifying "prod" will load "farconfig.prod")
-  --name            service name
-  --region          aws region
-  --cluster         aws cluster name
-  --profile         aws credentials profile name from default AWS credentials file
-  --tag             image tag. default tage name is the version in the package.json file
-  --repository      the docker repository storing the docker image
-  --draft           draft mode. in this mode every image tag is suffixed with a timestamp                      [boolean]
-  --subnets         the subnets to associate with the deployment                                                 [array]
-  --securityGroups  the security groups to associate with the deployment                                         [array]
-  --cpu             vCPU reservation (256|512|1024|2048|4096)                                                   [number]
-  --memory          memory reservation (aligned to vCPU)                                                        [number]
-  --secrets         list of files to upload to AWS Secrets Manager                                               [array]
-  --variables       environment variables to provide to the service (in the form of name=value)                  [array]
-  --logRetention    number of days for log retention in CloudWatchLogs (default is 90)                          [number]
-  --type            deployment type (fargate|ec2)
-  --role            IAM role that containers in this task assume (default is "far-tasks", created automatically)
-  --dockerfile      docker file to use for building the image
-  --count           number of container instances to run in the service
-```
-
 #### `update`
 
 The update command updates an existing service with new settings. 
@@ -266,7 +260,6 @@ Options:
   --name            service name
   --region          aws region
   --cluster         aws cluster name
-  --profile         aws credentials profile name from default AWS credentials file
   --tag             image tag. default tage name is the version in the package.json file
   --repository      the docker repository storing the docker image
   --draft           draft mode. in this mode every image tag is suffixed with a timestamp                      [boolean]
@@ -299,7 +292,7 @@ Options:
   --name     service name
   --region   aws region
   --cluster  aws cluster name
-  --profile  aws credentials profile name from default AWS credentials file
+  --creds    file containing AS api key and secret. if specified, will not open browser for interactive login
 ```
 
 #### `stop`
@@ -317,7 +310,7 @@ Options:
   --name     service name
   --region   aws region
   --cluster  aws cluster name
-  --profile  aws credentials profile name from default AWS credentials file
+  --creds    file containing AS api key and secret. if specified, will not open browser for interactive login
 ```
 
 #### `status`
@@ -335,7 +328,7 @@ Options:
   --name     service name
   --region   aws region
   --cluster  aws cluster name
-  --profile  aws credentials profile name from default AWS credentials file
+  --creds    file containing AS api key and secret. if specified, will not open browser for interactive login
   --events   number of events to display (0-100)      
 ```
 
@@ -354,7 +347,7 @@ Options:
   --name     service name
   --region   aws region
   --cluster  aws cluster name
-  --profile  aws credentials profile name from default AWS credentials file
+  --creds    file containing AS api key and secret. if specified, will not open browser for interactive login
   --start    start time of logs to view. default is current time
   --end      end time of logs to view. if not provided, logs will stream continuously  
 ```
@@ -374,7 +367,7 @@ Options:
   --name     service name
   --region   aws region
   --cluster  aws cluster name
-  --profile  aws credentials profile name from default AWS credentials file
+  --creds    file containing AS api key and secret. if specified, will not open browser for interactive login
 ```
 
 ## License

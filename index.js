@@ -13,7 +13,6 @@ class Far {
     this.config = config;
 
     this._validateConfig();
-    this._setAwsCredentials();
   }
 
   _validateConfig() {
@@ -28,14 +27,6 @@ class Far {
     }
     if (this.config.cpu && [256, 512, 1024, 2048, 4096].indexOf(this.config.cpu) === -1) {
       throw new Error(`cpu "${this.config.cpu}" is not a valid vCPU value`);
-    }
-  }
-
-  _setAwsCredentials() {
-    if (this.config.accesskey) {
-      AWS.config.credentials = new AWS.Credentials(this.config.accesskey, this.config.accesssecret);
-    } else if (this.config.profile) {
-      AWS.config.credentials = new AWS.SharedIniFileCredentials({ profile: this.config.profile });
     }
   }
 

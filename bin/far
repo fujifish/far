@@ -14,7 +14,6 @@ updateNotifier({ pkg, updateCheckInterval: 1000*60*60}).notify({isGlobal: true})
   const defaults = {
     name: path.basename(process.cwd()),
     cluster: path.basename(process.cwd()),
-    profile: "default",
     type: "fargate",
     count: 1,
     dockerfile: "Dockerfile",
@@ -128,8 +127,8 @@ updateNotifier({ pkg, updateCheckInterval: 1000*60*60}).notify({isGlobal: true})
     .option("cluster", {
       describe: "aws cluster name"
     })
-    .option("profile", {
-      describe: "aws credentials profile name from default AWS credentials file"
+    .option("creds", {
+      describe: "file containing AS api key and secret. if specified, will not open browser for interactive login"
     })
     .middleware([applyConfig])
     .command("init", "initialize a new far configuration file in the current directory")
@@ -217,9 +216,7 @@ updateNotifier({ pkg, updateCheckInterval: 1000*60*60}).notify({isGlobal: true})
     .demandCommand(1, "Please specify a command")
     .epilog(
       `A configuration file named "fargate.<env>" must exist in the current working directory for all commands (except init).
-Use "far init" to initialize a configuration file for the "test" environment.
 Use "far init --env prod" to initialize a configuration file for the "prod" environment.
-Use "far <command>" to run with the "farconfig.test" configuration.
 Use "far <command> --env prod" to run with the "farconfig.prod" configuration.`
     )
     .strict()
