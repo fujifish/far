@@ -1,7 +1,7 @@
 {
   "name": "@capriza/far",
-  "version": "1.11.0",
-  "description": "CLI for AWS Fargate as-a-service",
+  "version": "2.0.0",
+  "description": "CLI for deploying ApproveSimple connectors to AWS fargate",
   "main": "index.js",
   "bin": {
     "far": "./bin/far"
@@ -18,10 +18,12 @@
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "2.268.1",
+    "axios": "0.18.0",
     "chalk": "2.4.1",
     "dockerode": "2.5.5",
     "ini": "1.3.5",
     "js-yaml": "3.12.0",
+    "open": "6.0.0",
     "ora": "3.0.0",
     "tar-fs": "1.16.3",
     "update-notifier": "2.5.0",
