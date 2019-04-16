@@ -226,7 +226,8 @@ secrets:
   - secrets/myOtherFile.json: ../path/to/other/file.json
 ```
 
-Files that are specified as `secrets` in the configuration file are automatically excluded from the built docker image.
+Files that are specified as `secrets` in the far configuration file are automatically excluded from the built docker image. 
+In addition, files named `caprizaConfig.json` and `systemConfig.json` are automativally excluded from the built docker image regardless of wether they are specified as secrets.
 
 You can specify additional files/directories to exclude from the docker image by listing them in your local `.dockerignore` file.
 
