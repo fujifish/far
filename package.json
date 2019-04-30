@@ -1,6 +1,6 @@
 {
   "name": "@capriza/far",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "description": "CLI for deploying ApproveSimple connectors to AWS fargate",
   "main": "index.js",
   "bin": {
