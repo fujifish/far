@@ -27,8 +27,7 @@ updateNotifier({ pkg, updateCheckInterval: 1000*60*60}).notify({isGlobal: true})
     role: "far-tasks",
     variables: [],
     events: 10,
-    logRetention: 90,
-    logDestination: "arn:aws:logs:*:654841564804:destination:LogsDestination"
+    logRetention: 90
   };
 
   const applyConfig = argv => {
